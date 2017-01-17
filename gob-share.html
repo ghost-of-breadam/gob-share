@@ -1,0 +1,292 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../paper-tabs/paper-tabs.html">
+<link rel="import" href="../paper-tabs/paper-tab.html">
+
+<link rel="import" href="../gob-content/gob-content.html">
+
+<dom-module id="gob-share">
+  <template>
+
+    <style>
+      :host {
+
+        display: block;
+      }
+
+      .facebook{
+        background-color:#3b5998;
+        color:#fff;
+      }
+
+      .twitter{
+        background-color:#1da1f2;
+        color:#fff;
+      }
+
+      .google{
+        background-color:#d34836;
+        color:#fff;
+      }
+
+      .pinterest{
+        background-color:#cb2027;
+        color:#fff;
+      }
+
+      .linkedin{
+        background-color:#007bb5;
+        color:#fff;
+      }
+
+      .buffer{
+        background-color:#323b43;
+        color:#fff;
+      }
+
+      .digg{
+        background-color:#005be2;
+        color:#fff;
+      }
+
+      .tumblr{
+        background-color:#32506d;
+        color:#fff;
+      }
+
+      .reddit{
+        background-color:#ff4500;
+        color:#fff;
+      }
+
+      .stumbleupon{
+        background-color:#eb4924;
+        color:#fff;
+      }
+
+      .delicious{
+        background-color:#3399ff;
+        color:#fff;
+      }
+
+    </style>
+    <gob-content>
+      <paper-tabs scrollable>
+        <template is='dom-repeat' items="[[links]]" as="network">
+          <paper-tab class$="[[network.class]]" on-click="_open">[[network.name]]</paper-tab>
+        </template>
+      </paper-tabs>
+    </gob-content>
+  </template>
+  <script>
+
+    Polymer({
+
+      is: 'gob-share',
+
+      properties:{
+
+        links:{
+          type:Array,
+          computed:"_generateUrls(url,img,desc,app_id,redirect_url,via,hashtags,provider,is_video)"
+        },
+
+        url:{
+          type:String,
+          reflectToAttribute: true,
+          value:function(){
+            return window.location.href;
+          }
+        },
+
+        img:{
+          type:String,
+          reflectToAttribute: true,
+          value:""
+        },
+
+        desc:{
+          type:String,
+          reflectToAttribute: true,
+          value:""
+        },
+
+        app_id:{
+          type:String,
+          reflectToAttribute: true,
+          value:""
+        },
+
+        redirect_url:{
+          type:String,
+          reflectToAttribute: true,
+          value:""
+        },
+
+        via:{
+          type:String,
+          reflectToAttribute: true,
+          value:""
+        },
+
+        hashtags:{
+          type:String,
+          reflectToAttribute: true,
+          value:""
+        },
+
+        provider:{
+          type:String,
+          reflectToAttribute: true,
+          value:""
+        },
+
+        is_video:{
+          type:String,
+          reflectToAttribute: true,
+          value:""
+        },
+      },
+
+      // Thanks to https://github.com/bradvin/social-share-urls/blob/master/generator.js
+
+      _networks:[
+    		{
+    			name: 'Facebook',
+    			class: 'facebook',
+    			url: 'https://www.facebook.com/sharer.php?s=100&p[url]={url}&p[images][0]={img}&p[title]={title}&p[summary]={desc}'
+    		},
+    		{
+    			name: 'Twitter',
+    			class: 'twitter',
+    			url: 'https://twitter.com/intent/tweet?url={url}&text={title}&via={via}&hashtags={hashtags}'
+    		},
+    		{
+    			name: 'Google+',
+    			class: 'google',
+    			url: 'https://plus.google.com/share?url={url}',
+    		},
+    		{
+    			name: 'Pinterest',
+    			class: 'pinterest',
+    			url: 'https://pinterest.com/pin/create/bookmarklet/?media={img}&url={url}&is_video={is_video}&description={title}',
+    		},
+    		{
+    			name: 'Linked In',
+    			class: 'linkedin',
+    			url: 'https://www.linkedin.com/shareArticle?url={url}&title={title}',
+    		},
+    		{
+    			name: 'Buffer',
+    			class: 'buffer',
+    			url: 'https://buffer.com/add?text={title}&url={url}',
+    		},
+    		{
+    			name: 'Digg',
+    			class: 'digg',
+    			url: 'http://digg.com/submit?url={url}&title={title}',
+    		},
+    		{
+    			name: 'Tumblr',
+    			class: 'tumblr',
+    			url: 'https://www.tumblr.com/widgets/share/tool?canonicalUrl={url}&title={title}&caption={desc}',
+    		},
+    		{
+    			name: 'Reddit',
+    			class: 'reddit',
+    			url: 'https://reddit.com/submit?url={url}&title={title}',
+    		},
+    		{
+    			name: 'StumbleUpon',
+    			class: 'stumbleupon',
+    			url: 'http://www.stumbleupon.com/submit?url={url}&title={title}',
+    		},
+    		{
+    			name: 'Delicious',
+    			class: 'delicious',
+    			url: 'https://delicious.com/save?v=5&provider={provider}&noui&jump=close&url={url}&title={title}',
+    		}
+    	],
+
+      _cleanUrl:function(fullUrl) {
+
+        fullUrl = fullUrl.replace(/\{([^{}]*)}/g, '');
+
+    		var params = fullUrl.match(/[^\=\&\?]+=[^\=\&\?]+/g),
+    			url = fullUrl.split("?")[0];
+    		if (params && params.length > 0) {
+    			url += "?" + params.join("&");
+    		}
+
+    		return url;
+    	},
+
+      _generateUrls:function(url,img,desc,app_id,redirect_url,via,hashtags,provider,is_video){
+
+        var opt = {
+          url:url,
+          img:img,
+          desc:desc,
+          app_id:app_id,
+          redirect_url:redirect_url,
+          via:via,
+          hashtags:hashtags,
+          provider:provider,
+          is_video:is_video
+        };
+
+    		if (typeof opt !== 'object') { return false; }
+
+    		var links=[],network;
+    		for (var i = 0; i < this._networks.length; i++) {
+    			network = this._networks[i];
+    			links.push({
+    				name : network.name,
+    				class : network.class,
+    				url : this._generateUrl(network.url, opt)
+    			});
+    		}
+        return links;
+    	},
+
+      _generateUrl:function(url, opt) {
+    		var prop, arg, arg_ne;
+    		for (prop in opt) {
+    			arg = '{' + prop + '}';
+    			if  (url.indexOf(arg) !== -1) {
+    				url = url.replace(new RegExp(arg, 'g'), encodeURIComponent(opt[prop]));
+    			}
+    			arg_ne = '{' + prop + '-ne}';
+    			if  (url.indexOf(arg_ne) !== -1) {
+    				url = url.replace(new RegExp(arg_ne, 'g'), opt[prop]);
+    			}
+    		}
+    		return this._cleanUrl(url);
+    	},
+
+      _open:function(e) {
+
+    		e = (e ? e : window.event);
+
+    		var t = (e.target ? e.target : e.srcElement),
+    			width = t.data-width || 800,
+    			height = t.data-height || 500;
+
+    		var px = Math.floor(((screen.availWidth || 1024) - width) / 2);
+    		var py = Math.floor(((screen.availHeight || 700) - height) / 2);
+    		var popup = window.open(e.model.network.url, "social",
+    			"width="+width+",height="+height+
+    			",left="+px+",top="+py+
+    			",location=0,menubar=0,toolbar=0,status=0,scrollbars=1,resizable=1");
+
+    		if(popup){
+    			popup.focus();
+    			if (e.preventDefault) e.preventDefault();
+    			e.returnValue = false;
+    		}
+    		return !!popup;
+    	}
+    });
+
+  </script>
+</dom-module>
